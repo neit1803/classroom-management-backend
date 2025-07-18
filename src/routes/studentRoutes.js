@@ -1,19 +1,14 @@
 const express = require('express');
+const {getStudentLessons, markLessonAsDone, updateProfile} = require('../controllers/studentController');
 const studentRouter = express.Router();
 
 // GET requests
-studentRouter.get('/myLessons', (req, res) => {
-  res.send('List of student\'s lessons')
-});
+studentRouter.get('/myLessons', getStudentLessons);
 
 // POST requests
-studentRouter.post('/markLessonDone', (req, res) => {
-  res.send('Mark lesson as done')
-});
+studentRouter.post('/markLessonDone', markLessonAsDone);
 
 // PUT requests
-studentRouter.put('/editProfile', (req, res) => {
-  res.send('Update profile')
-});
+studentRouter.put('/editProfile', updateProfile);
 
 module.exports = studentRouter;
