@@ -1,0 +1,29 @@
+{
+  "name": "classroom-management-backend",
+  "version": "1.0.0",
+  "description": "Project: Classroom Management App, using Nodejs &amp; Express for building server-side",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./src/server.js",
+    "start": "node ./src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neit1803/classroom-management-backend.git"
+  },
+  "keywords": [
+    "nodejs",
+    "express"
+  ],
+  "author": "Minh Tien",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/neit1803/classroom-management-backend/issues"
+  },
+  "homepage": "https://github.com/neit1803/classroom-management-backend#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  }
+}
