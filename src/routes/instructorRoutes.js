@@ -1,31 +1,26 @@
 const express = require('express');
+const { 
+  getAllStudents, 
+  getStudentByPhone, 
+  addStudent, 
+  addLesson,
+  deleteStudent,
+  editStudent 
+} = require('../controllers/instructorController');
 const instructorRouter = express.Router();
 
 // GET requests
-instructorRouter.get('/students', (req, res) => {
-  res.send('List of students')
-});
-
-instructorRouter.get('/student/:phone', (req, res) => {
-  res.send('About student')
-});
+instructorRouter.get('/students', getAllStudents);
+instructorRouter.get('/student/:phone', getStudentByPhone);
 
 // POST requests
-instructorRouter.post('/addStudent', (req, res) => {
-  res.send('Add a new student')
-});
-instructorRouter.post('/assignLesson', (req, res) => {
-  res.send('Add a new lesson')
-});
+instructorRouter.post('/addStudent', addStudent);
+instructorRouter.post('/assignLesson', addLesson);
 
 // DELETE requests
-instructorRouter.delete('/deleteStudent/:phone', (req, res) => {
-  res.send('Delete a student')
-});
+instructorRouter.delete('/deleteStudent/:phone', deleteStudent);
 
 // PUT requests
-instructorRouter.put('/editStudent/:phone', (req, res) => {
-  res.send('Update a student')
-});
+instructorRouter.put('/editStudent/:phone', editStudent);
 
 module.exports = instructorRouter;
