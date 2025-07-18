@@ -23,7 +23,10 @@
   },
   "homepage": "https://github.com/neit1803/classroom-management-backend#readme",
   "dependencies": {
-    "express": "^5.1.0",
-    "nodemon": "^3.1.10"
+    "dotenv": "17.2.0",
+    "express": "5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "3.1.10"
   }
 }
