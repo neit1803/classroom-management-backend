@@ -9,6 +9,9 @@ const {
 } = require('../controllers/instructorController');
 const instructorRouter = express.Router();
 
+instructorRouter.use(express.json());
+instructorRouter.use(express.urlencoded({ extended: true }));
+
 // GET requests
 instructorRouter.get('/students', getAllStudents);
 instructorRouter.get('/student/:phone', getStudentByPhone);

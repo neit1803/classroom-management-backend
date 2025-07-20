@@ -2,6 +2,9 @@ const express = require('express');
 const {getStudentLessons, markLessonAsDone, updateProfile} = require('../controllers/studentController');
 const studentRouter = express.Router();
 
+instructorRouter.use(express.json());
+instructorRouter.use(express.urlencoded({ extended: true }));
+
 // GET requests
 studentRouter.get('/myLessons', getStudentLessons);
 
