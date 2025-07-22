@@ -35,7 +35,13 @@ const userService = {
         if (await userService.getStudentByPhone(studentData.phone).then(existingUser => existingUser.length > 0)) {
             return 'User with this phone number already exists';
         }
-        return await firebaseService.addDocument(collection, studentData);
+
+        try {
+            const user = new User(studentData);
+            return await firebaseService.addDocument(collection, user.toJson());
+        } catch (error) {
+            return `Error adding user: ${error.message}`;
+        }
     },
 
     // UPDATE requests
