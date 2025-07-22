@@ -1,20 +1,20 @@
 const { Timestamp } = require("firebase-admin/firestore");
 
 const ROLES = {
-  STUDENT: 'student',
-  INSTRUCTOR: 'instructor'
+  STUDENT: 'STUDENT',
+  INSTRUCTOR: 'INSTRUCTOR'
 };
 
 const USER_STATUS = {
-  PENDING: 'pending',
-  ACTIVE: 'active',
-  DISABLED: 'deleted',
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE',
+  DISABLED: 'DISABLED',
 };
 
 class User {
   constructor({
-    email,
-    phone,
+    email= '',
+    phone= '',
     name = '',
     passwordHash = '',
     role = ROLES.STUDENT,
@@ -22,18 +22,18 @@ class User {
     createdAt = null,
     updatedAt = null,
   }) {
-    if (!Object.values(ROLES).includes(role)) {
+    if (!Object.values(ROLES).includes(role.toUpperCase())) {
       throw new Error(`Invalid role: ${role}. Must be 'student' or 'instructor'.`);
     }
-    if (!Object.values(USER_STATUS).includes(status)) {
+    if (!Object.values(USER_STATUS).includes(status.toUpperCase())) {
       throw new Error(`Invalid status: ${status}. Must be 'pending', 'active', or 'deleted'.`);
     }
     this.email = email;
     this.phone = phone;
     this.name = name;
     this.passwordHash = passwordHash;
-    this.role = role;
-    this.status = status;
+    this.role = role || ROLES.STUDENT;
+    this.status = status || USER_STATUS.PENDING;
     this.createdAt = createdAt || Timestamp.now();
     this.updatedAt = updatedAt || Timestamp.now();
   }
@@ -45,7 +45,7 @@ class User {
       name: json.name,
       passwordHash: json.passwordHash,
       role: json.role,
-      status: json.status,
+      status: json.status,  
       createdAt: json.createdAt,
       updatedAt: json.updatedAt
     });
@@ -54,12 +54,11 @@ class User {
   toJson() {
     return {
       email: this.email,
-      username: this.username,
-      fullName: this.fullName,
+      phone: this.phone,
+      name: this.name,
       passwordHash: this.passwordHash,
-      isVerified: this.isVerified,
-      role: this.role,
-      status: this.status,
+      role: this.role.toUpperCase(),
+      status: this.status.toUpperCase(),
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
     };
