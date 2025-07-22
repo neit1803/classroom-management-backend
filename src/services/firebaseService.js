@@ -2,7 +2,7 @@ const {db} = require('../config/firebase');
 
 const FirebaserService = {
     addDocument: async (collection, data) => {
-        return db.collection(collection).doc(data.id).set(data);
+        return db.collection(collection).add(data);
     },
     getAllDocuments: async (collection) => {
         const snapshot = await db.collection(collection).get();
@@ -16,8 +16,15 @@ const FirebaserService = {
         return db.collection(collection).doc(id).update(data);
     },
 
-    deleteDocument: async (collection, id) => {
-        return db.collection(collection).doc(id).delete();
+    deleteDocumentByPhone: async (collection, phone) => {
+        const snapshot = await db.collection(collection).where('phone', '==', phone).limit(1).get();
+        if (snapshot.empty) {
+            return null;
+        }
+        const doc = snapshot.docs[0];
+        const deletedData = { id: doc.id, ...doc.data() };
+        await doc.ref.delete();
+        return deletedData;
     },
 };
 
