@@ -1,3 +1,5 @@
+const { Timestamp } = require("firebase-admin/firestore");
+
 const ROLES = {
   STUDENT: 'student',
   INSTRUCTOR: 'instructor'
@@ -12,14 +14,13 @@ const USER_STATUS = {
 class User {
   constructor({
     email,
-    username = '',
-    fullName = '',
+    phone,
+    name = '',
     passwordHash = '',
-    isVerified = false,
     role = ROLES.STUDENT,
-    status = 'pending',
+    status = USER_STATUS.PENDING,
     createdAt = null,
-    updatedAt = null
+    updatedAt = null,
   }) {
     if (!Object.values(ROLES).includes(role)) {
       throw new Error(`Invalid role: ${role}. Must be 'student' or 'instructor'.`);
@@ -28,23 +29,21 @@ class User {
       throw new Error(`Invalid status: ${status}. Must be 'pending', 'active', or 'deleted'.`);
     }
     this.email = email;
-    this.username = username;
-    this.fullName = fullName;
+    this.phone = phone;
+    this.name = name;
     this.passwordHash = passwordHash;
-    this.isVerified = isVerified;
     this.role = role;
     this.status = status;
-    this.createdAt = createdAt || new Date().toISOString();
-    this.updatedAt = updatedAt || new Date().toISOString();
+    this.createdAt = createdAt || Timestamp.now();
+    this.updatedAt = updatedAt || Timestamp.now();
   }
 
   static fromJson(json) {
     return new User({
       email: json.email,
-      username: json.username,
-      fullName: json.fullName,
+      phone: json.phone,
+      name: json.name,
       passwordHash: json.passwordHash,
-      isVerified: json.isVerified,
       role: json.role,
       status: json.status,
       createdAt: json.createdAt,
@@ -67,4 +66,4 @@ class User {
   }
 }
 
-module.exports = { User, ROLES };
+module.exports = { User, ROLES, USER_STATUS };
