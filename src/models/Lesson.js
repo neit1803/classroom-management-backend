@@ -16,13 +16,7 @@ class Lesson {
   }
 
   static fromJson(json) {
-    return new Lesson({
-      title: json.title,
-      description: json.description,
-      instructorId: json.instructorId,
-      students: json.students,
-      createdAt: json.createdAt
-    });
+    return new Lesson(json);
   }
 
   toJson() {
@@ -32,6 +26,14 @@ class Lesson {
       instructorId: this.instructorId,
       students: this.students,
       createdAt: this.createdAt,
+    };
+  }
+  
+  toFilteredJson() {
+    return {
+      title: this.title,
+      description: this.description,
+      instructorId: this.instructorId,
     };
   }
 }

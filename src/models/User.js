@@ -39,16 +39,7 @@ class User {
   }
 
   static fromJson(json) {
-    return new User({
-      email: json.email,
-      phone: json.phone,
-      name: json.name,
-      passwordHash: json.passwordHash,
-      role: json.role,
-      status: json.status,  
-      createdAt: json.createdAt,
-      updatedAt: json.updatedAt
-    });
+    return new User(json);
   }
 
   toJson() {
@@ -63,6 +54,19 @@ class User {
       updatedAt: this.updatedAt
     };
   }
+
+  toFilteredJson() {
+    return {
+      email: this.email,
+      phone: this.phone,
+      name: this.name,
+      role: this.role.toUpperCase(),
+      status: this.status.toUpperCase(),
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt
+    };
+  }
+
 }
 
 module.exports = { User, ROLES, USER_STATUS };
