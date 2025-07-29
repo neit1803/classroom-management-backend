@@ -6,12 +6,13 @@ userRouter.use(express.json());
 userRouter.use(express.urlencoded({ extended: true }));
 
 // GET requests
-userRouter.get('/students', userController.getAllStudents);
-userRouter.get('/student/:phone', userController.getStudentByPhone);
+userRouter.get('/students', userController.getUserByRole('student'));
+userRouter.get('/student/:phone', userController.getUserDetailByPhone);
+
+userRouter.get('/instructors', userController.getUserByRole('instructor'));
 
 // POST requests
 userRouter.post('/addStudent', userController.addStudent);
-// userRouter.post('/assignLesson', userController.addLesson);
 
 // PUT requests
 userRouter.put('/editProfile', userController.editProfile);

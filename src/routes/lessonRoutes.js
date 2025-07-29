@@ -7,10 +7,10 @@ lessonRouter.use(express.urlencoded({ extended: true }));
 
 // GET requests
 lessonRouter.get('/lessons', lessonController.getAllLessons);
-lessonRouter.get('/lesson/:phone', lessonController.getLessonByPhone);
+lessonRouter.get('/myLessons/:phone', lessonController.getStudentLessonByPhone);
 
 // POST requests
-lessonRouter.post('/addLesson', lessonController.addLesson);
+lessonRouter.post('/assignLesson', lessonController.addLesson);
 
 // PUT requests
 lessonRouter.put('/updateLesson/:id', lessonController.updateLesson);
