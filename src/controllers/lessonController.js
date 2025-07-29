@@ -8,9 +8,14 @@ const LessonController = {
         return res.send(lessons);
     },
 
-    getLessonByPhone: async (req, res) => {
-        const lesson = await lessonService.getLessonByPhone(req.params.phone);
+    getStudentLessonByPhone: async (req, res) => {
+        const lesson = await lessonService.getStudentLessonByPhone(req.params.phone);
         return res.send(lesson);
+    },
+
+    getInstructorLesson: async (req, res) => {
+        const lessons = await lessonService.getInstructorLesson(req.params.phone);
+        return res.send(lessons);
     },
 
     // POST requests

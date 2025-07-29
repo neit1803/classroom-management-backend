@@ -3,44 +3,47 @@ const firebaseService = require('../services/firebaseService');
 
 const collection = 'lessons';
 
-const lessonService = {
+class LessonService {
     // READ requests
-    getAllLessons: async () => {
+    async getAllLessons  () {
         return await firebaseService.getAllDocuments(collection);
-    },
-    getLessonById: async (id) => {
+    }
+
+    async getLessonById(id) {
         return await firebaseService.queryByField(collection, 'id', id);
-    },
-    getLessonsByTeacher: async (teacherId) => {
-        return await firebaseService.queryByField(collection, 'teacherId', teacherId);
-    },
-    getLessonsByPhone: async (phone) => {
-        return await firebaseService.queryByField(collection, 'phone', phone);
-    },
+    }
+
+    async getLessonsByInstructor (instructorId) {
+        return await firebaseService.queryByField(collection, 'instructorId', instructorId);
+    }
+
+    async getLessonByStudentPhone (phone){
+        return await firebaseService.queryByFieldWithContain(collection, 'students', phone);
+    }
 
     // CREATE requests
-    addLesson: async (lessonData) => {
+    async addLesson(lessonData){
         if (!lessonData.title || !lessonData.instructorId) {
             return 'title and instructorId are required to create a lesson';
         }
         try {
             const lesson = new Lesson(lessonData);
-            console.log(lesson);
             return await firebaseService.addDocument(collection, lesson.toJson());
         } catch (error) {
             return `Error adding lesson: ${error.message}`;
         }
-    },
+    }
 
     // UPDATE requests
-    updateLesson: async (id, lessonData) => {
+    async updateLesson(id, lessonData) {
         const lesson = new Lesson(lessonData);
-        return await firebaseService.updateDocument(collection, id, lesson);
-    },
-    // DELETE requests
-    deleteLesson: async (id) => {
-        return await firebaseService.deleteDocumentByPhone(collection, id);
+        return await firebaseService.updateDocument(collection, id, lesson.toJson());
     }
-};
 
-module.exports = lessonService;
+    // DELETE requests
+    async deleteLesson(id) {
+        return await firebaseService.deleteDocumentById(collection, id);
+    }
+}
+
+module.exports = new LessonService();

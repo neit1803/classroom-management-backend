@@ -3,31 +3,28 @@ const User= require('../models/User');
 
 const UserController = {
   // GET requests
-  getAllStudents: async (req, res) => {
-    const students = await userService.getAllStudents();
-    return res.send(students);
+  getAllUsers: async (req, res) => {
+    const users = await userService.getAllUsers();
+    return res.send(users);
   },
 
-  getStudentByPhone:  async (req, res) => {
-    const student = await userService.getStudentByPhone(req.params.phone);
-    return res.send(student);
+  getUserByRole: (role) => {
+    return async (req, res) => {
+      const users = await userService.getAllUserByRole(role.toUpperCase());
+      return res.send(users);
+    };
   },
 
-  getStudentLessons: async (req, res) => {
-    const lessons = await userService.getStudentLessons(req.user.phone);
-    return res.send(lessons);
+  getUserDetailByPhone:  async (req, res) => {
+    const user = await userService.getDetailedUserByPhone(req.params.phone);
+    return res.send(user);
   },
 
   // POST requests
   addStudent: async (req, res) => {
-    const result = await userService.addUser(req.body);
+    const result = await userService.addStudent(req.body);
     return res.send(result);
   },
-
-  // addLesson: async (req, res) => {
-  //   const result = await firebaseService.addDocument(lessonCollection, req.body);
-  //   return res.send(result);
-  // },
 
 
   // PUT requests

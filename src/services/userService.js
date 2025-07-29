@@ -1,38 +1,51 @@
 const { User } = require('../models/User');
+const { Lesson } = require('../models/Lesson');
+
 const firebaseService = require('../services/firebaseService');
+const lesssonService = require('../services/lessonService');
 
 const collection = 'users';
 
-const userService = {
+class UserService {
     // READ requests
-    getAllStudents: async () => {
-        return await firebaseService.getAllDocuments(collection);
-    },
+    async getAllUsers() {
+        const users = await firebaseService.getAllDocuments(collection);
+        return users.map(user => User.fromJson(user).toFilteredJson());
+    }
 
-    getStudentByPhone: async (phone) => {
-        return await firebaseService.queryByField(collection, 'phone', phone);
-    },
+    async getAllUserByRole(role) {
+        const users = await firebaseService.queryByField(collection, 'role', role);
+        return users.map(user => User.fromJson(user));
+    }
 
-    getStudentByEmail: async (email) => {
-        return await firebaseService.queryByField(collection, 'email', email);
-    },
+    async getDetailedUserByPhone(phone) {
+        const student = await firebaseService.queryByField(collection, 'phone', phone);
+        const lessons = await lesssonService.getLessonByStudentPhone(phone)
+            .then(lessons => lessons.map(
+                lesson => Lesson.fromJson(lesson).toFilteredJson()
+            ));
+        return {
+            ...student[0],
+            lessons: lessons
+        }
+    }
+
+    async getUserByEmail(email) {
+        return await firebaseService.queryByFields(collection, { email: email });
+    }
 
     // CREATE requests
-    addUser: async (studentData) => {
-        // if (studentData.email.contains('@') === false || studentData.email.includes(' ')) {
-        //     return 'Invalid email format';
-        // }
+    async addStudent(studentData) {
         if (studentData.phone.length < 10 || studentData.phone.length > 15 || !/^\d+$/.test(studentData.phone)) {
             return 'Invalid phone number format';
         }
         if (!studentData.email || !studentData.phone) {
             return 'Email and phone are required to create a user';
         }
-        if (await userService.getStudentByEmail(studentData.email).then(existingUser => existingUser.length > 0)) {
-            console.log(userService.getStudentByEmail(studentData.email));
+        if (await userService.getUserByEmail(studentData.email, 'student').then(existingUser => existingUser.length > 0)) {
             return 'User with this email already exists';
         }
-        if (await userService.getStudentByPhone(studentData.phone).then(existingUser => existingUser.length > 0)) {
+        if (await userService.getDetailedUserByPhone(studentData.phone, 'student').then(existingUser => existingUser.length > 0)) {
             return 'User with this phone number already exists';
         }
 
@@ -42,18 +55,18 @@ const userService = {
         } catch (error) {
             return `Error adding user: ${error.message}`;
         }
-    },
+    }
 
     // UPDATE requests
-    updateStudent: async (phone, studentData) => {
+    async updateStudent (phone, studentData) {
         const user = new User(studentData);
         return await firebaseService.updateDocument(collection, phone, user);
-    },
+    }
 
     // DELETE requests
-    deleteUser: async (phone) => {
+    async deleteUser(phone) {
         return await firebaseService.deleteDocumentByPhone(collection, phone);
     }
 }
 
-module.exports = userService;
+module.exports = new UserService();
