@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/neit1803/classroom-management-backend#readme",
   "dependencies": {
+    "@vonage/server-sdk": "^3.22.1",
     "dotenv": "17.2.0",
     "express": "5.1.0",
     "firebase-admin": "^13.4.0",

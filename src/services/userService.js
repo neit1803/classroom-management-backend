@@ -3,6 +3,8 @@ const { Lesson } = require('../models/Lesson');
 
 const firebaseService = require('../services/firebaseService');
 const lesssonService = require('../services/lessonService');
+const VonageService = require('./vonageService');
+const AuthService = require('../services/authService');
 
 const collection = 'users';
 
@@ -42,15 +44,18 @@ class UserService {
         if (!studentData.email || !studentData.phone) {
             return 'Email and phone are required to create a user';
         }
-        if (await userService.getUserByEmail(studentData.email, 'student').then(existingUser => existingUser.length > 0)) {
+        if (await this.getUserByEmail(studentData.email, 'student').then(existingUser => existingUser.length > 0)) {
             return 'User with this email already exists';
         }
-        if (await userService.getDetailedUserByPhone(studentData.phone, 'student').then(existingUser => existingUser.length > 0)) {
+        if (await this.getDetailedUserByPhone(studentData.phone, 'student').then(existingUser => existingUser.length > 0)) {
             return 'User with this phone number already exists';
         }
-
         try {
             const user = new User(studentData);
+            const accessCode = await AuthService.createAccessCode(studentData.phone);
+            
+            //await VonageService.sendSMS(user.phone, accessCode.code);
+            
             return await firebaseService.addDocument(collection, user.toJson());
         } catch (error) {
             return `Error adding user: ${error.message}`;
