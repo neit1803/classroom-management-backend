@@ -1,53 +1,87 @@
-const {db} = require('../config/firebase');
+const { db } = require('../config/firebase');
+const functions = require('firebase-functions');
 
-const FirebaserService = {
-    addDocument: async (collection, data) => {
-        return db.collection(collection).add(data);
+const FirebaseService = {
+    addDocument: async (path, data) => {
+        const ref = db.ref(path).push();
+        await ref.set(data);
+        return { id: ref.key, ...data };
     },
-    getAllDocuments: async (collection) => {
-        const snapshot = await db.collection(collection).get();
-        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    addDocumentWithId: async (path, id, data) => {
+        const ref = db.ref(`${path}/${id}`);
+        await ref.set(data);
+        return { id, ...data };
     },
-    queryByField: async (collection, field, value) => {
-        const snapshot = await db.collection(collection).where(field, '==', value).get();
-        return snapshot.docs.map(doc => doc.data());
+
+    getAllDocuments: async (path) => {
+        const snapshot = await db.ref(path).once('value');
+        const result = snapshot.val();
+        if (!result) return [];
+        return Object.entries(result).map(([id, value]) => ({ id, ...value }));
     },
-    queryByFields: async (collection, query) => {
-        let ref = db.collection(collection);
-        for (const [field, value] of Object.entries(query)) {
-            ref = ref.where(field, '==', value);
-        }
-        const snapshot = await ref.get();
-        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    queryByField: async (path, field, value) => {
+        const snapshot = await db.ref(path)
+            .orderByChild(field)
+            .equalTo(value)
+            .once('value');
+        const result = snapshot.val();
+        if (!result) return [];
+        return Object.entries(result).map(([id, val]) => ({ id, ...val }));
     },
-    queryByFieldWithContain: async (collection, field, value) => {
-        const snapshot = await db.collection(collection).where(field, 'array-contains', value).get();
-        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    queryByFields: async (path, query) => {
+        const snapshot = await db.ref(path).once('value');
+        const allData = snapshot.val();
+        if (!allData) return [];
+
+        return Object.entries(allData).filter(([id, data]) => {
+            return Object.entries(query).every(([key, value]) => data[key] === value);
+        }).map(([id, data]) => ({ id, ...data }));
     },
-    updateDocument: async (collection, id, data) => {
-        return db.collection(collection).doc(id).update(data);
+
+    queryByFieldWithContain: async (path, field, value) => {
+        const snapshot = await db.ref(path).once('value');
+        const allData = snapshot.val();
+        if (!allData) return [];
+
+        return Object.entries(allData).filter(([id, data]) => {
+            const fieldValue = data[field];
+            return Array.isArray(fieldValue) && fieldValue.includes(value);
+        }).map(([id, data]) => ({ id, ...data }));
     },
-    deleteDocumentByPhone: async (collection, phone) => {
-        const snapshot = await db.collection(collection).where('phone', '==', phone).limit(1).get();
-        if (snapshot.empty) {
-            return null;
-        }
-        const doc = snapshot.docs[0];
-        const deletedData = { id: doc.id, ...doc.data() };
-        await doc.ref.delete();
+
+
+    updateDocument: async (path, id, data) => {
+        const ref = db.ref(`${path}/${id}`);
+        await ref.update(data);
+        return { id, ...data };
+    },
+
+    deleteDocumentById: async (path, id) => {
+        const ref = db.ref(`${path}/${id}`);
+        const snapshot = await ref.once('value');
+        if (!snapshot.exists()) return null;
+        const deletedData = { id, ...snapshot.val() };
+        await ref.remove();
         return deletedData;
     },
 
-    deleteDocumentById: async (collection, id) => {
-        const docRef = db.collection(collection).doc(id);
-        const doc = await docRef.get();
-        if (!doc.exists) {
-            return null;
-        }
-        const deletedData = { id: doc.id, ...doc.data() };
-        await docRef.delete();
+    deleteDocumentByField: async (path, field, value) => {
+        const snapshot = await db.ref(path)
+            .orderByChild(field)
+            .equalTo(value)
+            .once('value');
+        if (!snapshot.exists()) return null;
+
+        const result = snapshot.val();
+        const key = Object.keys(result)[0];
+        const ref = db.ref(`${path}/${key}`);
+        const deletedData = { id: key, ...result[key] };
+        await ref.remove();
         return deletedData;
-    }   
+    },
 };
 
-module.exports = FirebaserService;
+module.exports = FirebaseService;

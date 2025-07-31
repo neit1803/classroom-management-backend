@@ -8,10 +8,10 @@ const serviceAccount = require(serviceAccountPath);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: `https://${process.env.PROJECT_ID}.firebaseio.com`
+  databaseURL: process.env.DATABASE_URL || ""
 });
 
-const db = admin.firestore();
+const db = admin.database();
 const auth = admin.auth();
 
 module.exports = {
