@@ -5,7 +5,7 @@ const collection = 'lessons';
 
 class LessonService {
     // READ requests
-    async getAllLessons  () {
+    async getAllLessons() {
         return await firebaseService.getAllDocuments(collection);
     }
 
@@ -18,7 +18,7 @@ class LessonService {
     }
 
     async getLessonByStudentPhone (phone){
-        return await firebaseService.queryByFieldWithContain(collection, 'students', phone);
+        return await firebaseService.queryByFieldWithContain(collection, collection, phone);
     }
 
     // CREATE requests
