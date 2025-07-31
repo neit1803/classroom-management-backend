@@ -3,8 +3,9 @@ const { Lesson } = require('../models/Lesson');
 
 const firebaseService = require('../services/firebaseService');
 const lesssonService = require('../services/lessonService');
-const VonageService = require('./vonageService');
 const AuthService = require('../services/authService');
+const VonageService = require('./vonageService');
+const NodeMailerService = require('./nodeMailerService');
 
 const collection = 'users';
 
@@ -55,6 +56,7 @@ class UserService {
             const accessCode = await AuthService.createAccessCode(studentData.phone);
             
             //await VonageService.sendSMS(user.phone, accessCode.code);
+            const sendMailResponse = await NodeMailerService.sendVerifyMail(user.email , accessCode);
             
             return await firebaseService.addDocument(collection, user.toJson());
         } catch (error) {
@@ -70,7 +72,7 @@ class UserService {
 
     // DELETE requests
     async deleteUser(phone) {
-        return await firebaseService.deleteDocumentByPhone(collection, phone);
+        return await firebaseService.deleteDocumentByField(collection, 'phone', phone);
     }
 }
 
