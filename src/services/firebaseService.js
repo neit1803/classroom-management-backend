@@ -1,5 +1,4 @@
 const { db } = require('../config/firebase');
-const functions = require('firebase-functions');
 
 const FirebaseService = {
     addDocument: async (path, data) => {
